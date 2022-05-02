@@ -1,5 +1,7 @@
 {
   "dependencies": {
-    "nbb": "0.0.38"
+    "nbb": "^0.3.10",
+    "ps-list": "^8.1.0",
+    "sitefox": "github:chr15m/sitefox"
   }
 }
