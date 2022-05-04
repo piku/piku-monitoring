@@ -2,3 +2,5 @@
 package-lock.json
 node_modules
 database.sqlite
+public/chart.svg
+public/spec.json
