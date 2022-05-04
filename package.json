@@ -2,6 +2,11 @@
   "dependencies": {
     "nbb": "^0.3.10",
     "ps-list": "^8.1.0",
-    "sitefox": "github:chr15m/sitefox"
+    "sitefox": "github:chr15m/sitefox",
+    "vega": "^5.22.1",
+    "vega-lite": "^5.2.0"
+  },
+  "scripts": {
+    "update": "nbb --classpath ${NODE_PATH:=./node_modules}/sitefox/src ps.cljs"
   }
 }

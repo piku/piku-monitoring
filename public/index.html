@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+    <title>Piku monitoring</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      html, body {
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        margin: 0px;
+      }
+
+      #chart {
+        min-height: 50vh;
+        width: 100%;
+      }
+
+      #processes {
+        text-align: left;
+        overflow: auto;
+        padding: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Piku monitoring</h1>
+    <nav>1 hr, 6 hrs, 24 hrs, 7 days, 14 days</nav>
+    <div id="chart">
+      <img src="chart.svg">
+    </div>
+    <pre id="processes"></pre>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+    <script>
+      vegaEmbed("#chart", "spec.json", {"actions": false}).then(function (vl) {
+        vl.view.addEventListener("click", function(ev, data) {
+          const processes = data.datum?.processes;
+          const el = document.querySelector("#processes");
+          if (processes) {
+            el.textContent = JSON.stringify(processes, null, 2);
+          } else {
+            el.textContent = "";
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
