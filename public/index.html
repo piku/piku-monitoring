@@ -32,6 +32,15 @@
       h1 img {
         height: 2em;
       }
+      
+      .hog {
+        background-color: #1c1c1c;
+        color: #c5c5c5;
+        border-radius: 10px;
+        font-family: "courier 10pt", "courier", "courier new", monospace;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
     </style>
   </head>
   <body>
@@ -47,7 +56,7 @@
     <div id="chart">
       <img src="chart.svg">
     </div>
-    <pre id="processes"></pre>
+    <div id="processes"></div>
     <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
@@ -74,14 +83,37 @@
           console.log(vl);
           vl.view.addEventListener("click", function(ev, data) {
             const processes = data.datum?.processes;
-            const el = document.querySelector("#processes");
             if (processes) {
-              el.textContent = JSON.stringify(processes, null, 2);
+              update_processes(processes);
             } else {
-              el.textContent = "";
+              update_processes();
             }
           });
         });
+      }
+
+      function update_processes(processes) {
+        const el = document.querySelector("#processes");
+        el.innerHTML = "";
+        if (processes) {
+          let h = "";
+          h += "<p>" + (new Date(processes.timestamp * 1000)).toString().split(" ").slice(0,5).join(" ") + "</p>";
+          h += "<h3>CPU hogs</h3>"
+          processes.cpu.forEach((c) => {
+            console.log(c);
+            h += "<div class='hog'>";
+            h += "<p class='name'>" + c.pid + " <strong>" + c.name + "</strong> (" + c.cpu + " cpu)</p>";
+            if (c.cwd?.indexOf("/apps/") > -1) {
+              const app = c.cwd.split("/apps/");
+              h += "<p>" + app[0] + "/apps/<strong>" + app[1] + "</strong></p>";
+            } else {
+              h += "<p>" + c.cwd + "</p>";
+            }
+            h += "<p>" + c.cmd + "</p>";
+            h += "</div>";
+          });
+          el.innerHTML = h;
+        }
       }
 
       fetch("spec.json").then(r=>r.json()).then((spec) => {
