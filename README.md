@@ -11,3 +11,9 @@ git remote add piku piku@HOSTNAME:piku-monitoring
 git push piku main
 piku config:set NGINX_SERVER_NAME=...
 ```
+
+By default it uses a local sqlite database but you can change that by setting the `DATABASE` variable:
+
+```
+DATABASE_URL=postgres://someuser:somepassword@somehost:5432/somedatabase
+```
