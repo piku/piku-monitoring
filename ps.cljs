@@ -69,7 +69,7 @@
                             process-history)]
     (.set store "load-history" load-history)
     (.set store "process-history" process-history)
-    (print "over load?" over-loaded)
+    ;(print "over load?" over-loaded)
     ;(print "load-history" (j/get load-history :length))
     ;(print "process-history" (j/get process-history :length))
     ;(log load-history)
@@ -110,28 +110,22 @@
                                   :axis {:labelAngle 15
                                          :titleColor "#7e7e7e"
                                          :titleFontSize 14
-                                         :labelFontSize 14}
-                                  ;:bin true
-                                  :timeUnit {:unit :yearmonthdatehoursminutes}
-                                  ;:title nil
-                                  }
-                              ;:y {:field :load}
-                              }
-                   :layer [{:mark {;:type :line
-                                   :type :bar
+                                         :labelFontSize 14
+                                         :title "Time"}
+                                  :timeUnit {:unit :yearmonthdatehoursminutes}}}
+                   :layer [{:mark {:type :bar
                                    :orient :vertical
-                                   :title "Max load"
-                                   ;:width {:band 1}
-                                   ;:width 2
-                                   ;:width 60
                                    :tooltip true}
                             :encoding {:y {:field :load
                                            :aggregate :max
-                                           :format ".0%"}
-                                       ;:y2 {:value 0}
+                                           :format ".0%"
+                                           :axis {:titleColor "#7e7e7e"
+                                                  :titleFontSize 14
+                                                  :labelFontSize 14
+                                                  :title "Max load %"}}
                                        :color {:condition {:test "datum.processes"
-                                                           :value "red"}
-                                               :value "blue"}
+                                                           :value "#FF2A2A"}
+                                               :value "#2A7FFF"}
                                        :tooltip [;{:field :load :aggregate :max}
                                                  {:field :timestamp :timeUnit {:unit :yearmonthdatehoursminutes} :title "time"}
                                                  ;{:field :process}
@@ -148,7 +142,8 @@
     ;(log load-history)
     ;(log process-history)
     ;(print (-> vl-spec clj->js (js/JSON.stringify nil 2)))
-    (writeFileSync (path/join dest "spec.json") (js/JSON.stringify hosted-spec))
+    ;(writeFileSync (path/join dest "spec.json") (js/JSON.stringify hosted-spec))
+    (writeFileSync (path/join dest "spec.json") (js/JSON.stringify (clj->js hosted-vl-spec)))
     (-> (.toSVG view)
         (.then (fn [svg] (writeFileSync (path/join dest "chart.svg") svg))))))
 

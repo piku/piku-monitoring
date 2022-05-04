@@ -4,8 +4,10 @@
     <meta charset="utf-8" >
     <title>Piku monitoring</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="icon.png" rel="icon" type="image/png">    
     <style>
       html, body {
+        font-family: Arial, sans-serif;
         width: 100%;
         height: 100%;
         text-align: center;
@@ -22,11 +24,26 @@
         overflow: auto;
         padding: 1em;
       }
+
+      h1 {
+        vertical-align: middle;
+      }
+
+      h1 img {
+        height: 2em;
+      }
     </style>
   </head>
   <body>
-    <h1>Piku monitoring</h1>
-    <nav>1 hr, 6 hrs, 24 hrs, 7 days, 14 days</nav>
+    <h1><img src="logo.svg" title="piku monitoring" alt="piku monitoring"/></h1>
+    <select onchange="update(this);">
+      <option value="1hr">1 hour</option>
+      <option value="6hr">6 hours</option>
+      <option value="24hr">24 hours</option>
+      <option value="7day">7 days</option>
+      <option value="14day">14 days</option>
+      <option value="month">1 month</option>
+    </select>
     <div id="chart">
       <img src="chart.svg">
     </div>
@@ -35,16 +52,41 @@
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
     <script>
-      vegaEmbed("#chart", "spec.json", {"actions": false}).then(function (vl) {
-        vl.view.addEventListener("click", function(ev, data) {
-          const processes = data.datum?.processes;
-          const el = document.querySelector("#processes");
-          if (processes) {
-            el.textContent = JSON.stringify(processes, null, 2);
-          } else {
-            el.textContent = "";
-          }
+      let cachedspec = null;
+
+      function update(el) {
+        const bands = {
+          "1hr": [1, "minutes"],
+          "6hr": [6, "minutes"],
+          "24hr": [24, ""],
+          "7day": [168, ""],
+          "14day": [336, ""],
+          "month": [744, ""],
+        }
+
+        const band = bands[el ? el.value : "1hr"];
+        const now = (new Date()).getTime();
+        cachedspec.transform = [{"filter": "datum['timestamp'] > " + (now - (1000 * 60 * 60 * band[0]))}];
+        const timeunit = "yearmonthdatehours" + band[1];
+        cachedspec["encoding"]["x"]["timeUnit"]["unit"] = timeunit;
+
+        vegaEmbed("#chart", cachedspec, {"actions": false}).then(function (vl) {
+          console.log(vl);
+          vl.view.addEventListener("click", function(ev, data) {
+            const processes = data.datum?.processes;
+            const el = document.querySelector("#processes");
+            if (processes) {
+              el.textContent = JSON.stringify(processes, null, 2);
+            } else {
+              el.textContent = "";
+            }
+          });
         });
+      }
+
+      fetch("spec.json").then(r=>r.json()).then((spec) => {
+        cachedspec = spec;
+        update();
       });
     </script>
   </body>
