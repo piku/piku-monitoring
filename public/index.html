@@ -80,7 +80,6 @@
         cachedspec["encoding"]["x"]["timeUnit"]["unit"] = timeunit;
 
         vegaEmbed("#chart", cachedspec, {"actions": false}).then(function (vl) {
-          console.log(vl);
           vl.view.addEventListener("click", function(ev, data) {
             const processes = data.datum?.processes;
             if (processes) {
@@ -100,7 +99,6 @@
           h += "<p>" + (new Date(processes.timestamp * 1000)).toString().split(" ").slice(0,5).join(" ") + "</p>";
           h += "<h3>CPU hogs</h3>"
           processes.cpu.forEach((c) => {
-            console.log(c);
             h += "<div class='hog'>";
             h += "<p class='name'>" + c.pid + " <strong>" + c.name + "</strong> (" + c.cpu + " cpu)</p>";
             if (c.cwd?.indexOf("/apps/") > -1) {
